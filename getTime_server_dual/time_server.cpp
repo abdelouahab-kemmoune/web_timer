@@ -20,7 +20,7 @@ int main() {
 
     std::cout << "Configuring local address...\n";
     struct addrinfo hints = {};
-    hints.ai_family = AF_INET;
+    hints.ai_family = AF_INET6;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
     struct addrinfo *bind_address;
@@ -35,6 +35,13 @@ int main() {
         std::cerr << "socket() failed. Error: " << std::strerror(errno) 
               << " (" << errno << ")" << "\n";
     return 1;
+    }
+
+    int option = 0;
+    if (setsockopt(socket_listen, IPPROTO_IPV6, IPV6_V6ONLY, (void*)&option, sizeof(option)) < 0) {
+        std::cerr << "setsockopt() failed: " << std::strerror(errno) 
+                << " (Code: " << errno << ")\n";
+        return 1;
     }
 
     std::cout << "Binding socket to local address...\n";
